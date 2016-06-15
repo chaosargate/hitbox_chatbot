@@ -1,3 +1,4 @@
+import os
 import websocket
 import requests
 import json
@@ -9,15 +10,35 @@ class Hitbox:
 
     def __init__(self):
 
+        self.username = None
+        self.password = None
+        self.channel = None
         self.ws = websocket.WebSocket()
         self.auth_token = None
 
     def __enter__(self):
 
+        settings_path = 'settings/settings.ini'
+        if os.path.isfile(settings_path):
+            with open(settings_path) as settings_file:
+                data = json.load(settings_file)
+
+                if 'username' in data:
+                    self.username = data['username']
+
+                if 'password' in data:
+                    self.password = data['password']
+
+                if 'channel' in data:
+                    self.channel = data['channel']
+
+        if self.username is None or self.password is None or self.channel is None:
+            print "Please supply a username, password and channel in settings/settings.ini."
+            return None
+
         server_list = requests.get(settings.hitbox_api.format(api=settings.server_list_path))
 
         if not server_list.ok:
-
             print "Could not get server list!"
             return None
 
@@ -92,7 +113,7 @@ class Hitbox:
                 }
             }
         ]
-        }''' % (channel, settings.username, auth_token)
+        }''' % (channel, self.username, auth_token)
 
         self.ws.send(request)
 
@@ -104,7 +125,7 @@ class Hitbox:
         "login":"%s",
         "pass":"%s",
         "app":"desktop"
-        }''' % (settings.username, settings.password)
+        }''' % (self.username, self.password)
 
         auth = requests.post(url=settings.hitbox_api.format(api=settings.auth_token_path), data=request)
 
@@ -129,7 +150,7 @@ class Hitbox:
                 }
             }
         ]
-        }''' % (channel, settings.username, msg)
+        }''' % (channel, self.username, msg)
 
         self.ws.send(request)
 
