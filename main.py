@@ -33,7 +33,7 @@ class Hitbox:
                     self.channel = data['channel']
 
         if self.username is None or self.password is None or self.channel is None:
-            print "Please supply a username, password and channel in settings/settings.ini."
+            print "Please supply a username, password and channel in settings/settings.ini"
             return None
 
         server_list = requests.get(settings.hitbox_api.format(api=settings.server_list_path))
@@ -47,7 +47,8 @@ class Hitbox:
 
         self.ws.connect(socket_id)
         self.auth_token = self.get_auth_token()
-        self.join_channel(settings.channel, self.auth_token)
+        self.join_channel(self.channel, self.auth_token)
+        print self.ws.recv()
 
         return self
 
@@ -74,11 +75,14 @@ class Hitbox:
                     print chat_data['params']['name'] + ": " + msg
 
                     if re.search("(.png)|(.jpg)|(.jpeg)|(.gif)$", msg):
-                        pass
- #                       self.send_message('chaosargate', msg)
+                        self.send_message(self.channel, msg)
                     elif msg == '!test':
                         print "123"
-#                        self.send_message('chaosargate', 'This is a test')
+                        self.send_message(self.channel, 'This is a test')
+                    elif msg == '!farts':
+                        self.send_message(self.channel, 'http://i.imgur.com/P8zSeiR.png')
+
+        return None
 
     def get_websocket_conn_id(self, server_id):
 
