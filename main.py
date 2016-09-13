@@ -79,8 +79,6 @@ class Hitbox:
                     elif msg == '!test':
                         print "123"
                         self.send_message(self.channel, 'This is a test')
-                    elif msg == '!farts':
-                        self.send_message(self.channel, 'http://i.imgur.com/P8zSeiR.png')
 
         return None
 
